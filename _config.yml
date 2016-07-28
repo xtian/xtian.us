@@ -13,3 +13,6 @@ url: "https://xtian.us"
 
 # Build settings
 markdown: kramdown
+
+gems:
+  - jekyll-assets
