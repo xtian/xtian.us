@@ -1,0 +1,12 @@
+build:
+  image: ruby:2.3.1
+
+  commands:
+    - bundle install --jobs $(nproc) --path .bundle
+    - bundle exec jekyll build
+    - bundle exec htmlproofer ./_site
+
+cache:
+  mount:
+    - .bundle
+    - .git
