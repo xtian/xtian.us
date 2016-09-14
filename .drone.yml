@@ -10,3 +10,12 @@ cache:
   mount:
     - .bundle
     - .git
+
+deploy:
+  rsync:
+    delete: false
+    host: xtian.us
+    recursive: true
+    source: _site
+    target: /srv/www/xtian.us/public_html
+    user: deploy
