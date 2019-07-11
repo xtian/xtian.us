@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -o errexit -o errtrace
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+trap 'pkill -P $$' SIGINT SIGTERM
+
+node_modules/.bin/elmstatic watch 2>&1 | sed "s/\(.*\)/[elmstatic] \1/" &
+
+(
+  cd _site/
+
+  browser-sync start \
+    --server \
+    --files "." \
+    --no-ui \
+    --reload-delay 500 \
+    --reload-debounce 500 \
+    | sed "s/\(.*\)/[browser-sync] \1/" \
+    &
+)
+
+wait
