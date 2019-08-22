@@ -15,9 +15,10 @@ module Elmstatic exposing
     )
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Json.Decode
+import Html as H exposing (Html)
+import Html.Attributes as HA
+import Json.Decode as JD
+import Json.Decode.Pipeline as JP
 
 
 type alias Post =
@@ -51,81 +52,91 @@ type alias Content a =
 
 
 type alias Layout =
-    Program Json.Decode.Value Json.Decode.Value Never
+    Program JD.Value JD.Value Never
 
 
-decodePage : Json.Decode.Decoder Page
+decodePage : JD.Decoder Page
 decodePage =
-    Json.Decode.map3 Page
-        (Json.Decode.field "markdown" Json.Decode.string)
-        (Json.Decode.field "siteTitle" Json.Decode.string)
-        (Json.Decode.field "title" Json.Decode.string)
+    JD.succeed Page
+        |> JP.required "markdown" JD.string
+        |> JP.required "siteTitle" JD.string
+        |> JP.required "title" JD.string
 
 
-decodePost : Json.Decode.Decoder Post
+decodePost : JD.Decoder Post
 decodePost =
-    Json.Decode.map7 Post
-        (Json.Decode.field "date" Json.Decode.string)
-        (Json.Decode.field "link" Json.Decode.string)
-        (Json.Decode.field "markdown" Json.Decode.string)
-        (Json.Decode.field "section" Json.Decode.string)
-        (Json.Decode.field "siteTitle" Json.Decode.string)
-        (Json.Decode.field "tags" <| Json.Decode.list Json.Decode.string)
-        (Json.Decode.field "title" Json.Decode.string)
+    JD.succeed Post
+        |> JP.required "date" JD.string
+        |> JP.required "link" JD.string
+        |> JP.required "markdown" JD.string
+        |> JP.required "section" JD.string
+        |> JP.required "siteTitle" JD.string
+        |> JP.required "tags" (JD.list JD.string)
+        |> JP.required "title" JD.string
 
 
-decodePostList : Json.Decode.Decoder PostList
+decodePostList : JD.Decoder PostList
 decodePostList =
-    Json.Decode.map4 PostList
-        (Json.Decode.field "posts" <| Json.Decode.list decodePost)
-        (Json.Decode.field "section" Json.Decode.string)
-        (Json.Decode.field "siteTitle" Json.Decode.string)
-        (Json.Decode.field "title" Json.Decode.string)
+    JD.succeed PostList
+        |> JP.required "posts" (JD.list decodePost)
+            |> JP.required "section" JD.string
+            |> JP.required "siteTitle" JD.string
+            |> JP.required "title" JD.string
 
 
 script : String -> Html Never
 script src =
-    node "citatsmle-script" [ attribute "src" src ] []
+    H.node "citatsmle-script" [ HA.attribute "src" src ] []
 
 
 inlineScript : String -> Html Never
 inlineScript js =
-    node "citatsmle-script" [] [ text js ]
+    H.node "citatsmle-script" [] [ H.text js ]
 
 
 stylesheet : String -> Html Never
 stylesheet href =
-    node "link" [ attribute "href" href, attribute "rel" "stylesheet", attribute "type" "text/css" ] []
+    H.node "link"
+        [ HA.attribute "href" href
+        , HA.attribute "rel" "stylesheet"
+        ]
+        []
 
 
 htmlTemplate : String -> List (Html Never) -> Html Never
 htmlTemplate title contentNodes =
-    node "html"
+    H.node "html"
         []
-        [ node "head"
+        [ H.node "head"
             []
-            [ node "title" [] [ text title ]
-            , node "meta" [ attribute "charset" "utf-8" ] []
-            , script "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.1/highlight.min.js"
-            , script "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.1/languages/elm.min.js"
-            , inlineScript "hljs.initHighlightingOnLoad();"
-            , stylesheet "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.1/styles/default.min.css"
-            , stylesheet "//fonts.googleapis.com/css?family=Open+Sans|Proza+Libre|Inconsolata"
+            [ H.node "meta" [ HA.attribute "charset" "utf-8" ] []
+            , H.node "title" [] [ H.text title ]
+            , H.node "meta"
+                [ HA.attribute "name" "description"
+                , HA.attribute "content" ""
+                ]
+                []
+            , H.node "meta"
+                [ HA.attribute "name" "viewport"
+                , HA.attribute "content" "width=device-width, initial-scale=1"
+                ]
+                []
+            , stylesheet "//fonts.googleapis.com/css?family=Inconsolata"
             ]
-        , node "body" [] contentNodes
+        , H.node "body" [] contentNodes
         ]
 
 
-layout : Json.Decode.Decoder (Content content) -> (Content content -> List (Html Never)) -> Layout
+layout : JD.Decoder (Content content) -> (Content content -> List (Html Never)) -> Layout
 layout decoder view =
     Browser.document
         { init = \contentJson -> ( contentJson, Cmd.none )
         , view =
             \contentJson ->
-                case Json.Decode.decodeValue decoder contentJson of
+                case JD.decodeValue decoder contentJson of
                     Err error ->
                         { title = ""
-                        , body = [ htmlTemplate "Error" [ Html.text <| Json.Decode.errorToString error ] ]
+                        , body = [ htmlTemplate "Error" [ H.text <| JD.errorToString error ] ]
                         }
 
                     Ok content ->
