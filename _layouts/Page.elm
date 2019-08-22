@@ -4,7 +4,6 @@ import Elmstatic exposing (..)
 import Html exposing (..)
 import Html.Attributes as Attr exposing (alt, attribute, class, href, src)
 import Markdown
-import Styles
 
 
 markdown : String -> Html Never
@@ -69,8 +68,6 @@ layout title contentItems =
            , div [ class "content" ]
                 ([ h1 [] [ text title ] ] ++ contentItems)
            , footer
-           , Elmstatic.stylesheet "/styles.css"
-           , Styles.styles
            ]
 
 
