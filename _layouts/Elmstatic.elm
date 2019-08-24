@@ -12,7 +12,10 @@ import Json.Decode as JD
 
 
 type alias Content a =
-    { a | siteTitle : String, title : String }
+    { a
+        | siteTitle : String
+        , title : String
+    }
 
 
 type alias Layout =
@@ -35,7 +38,7 @@ layout decoder view =
                         { title = ""
                         , body = [ htmlTemplate content.siteTitle (view content) ]
                         }
-        , update = \msg contentJson -> ( contentJson, Cmd.none )
+        , update = \_ contentJson -> ( contentJson, Cmd.none )
         , subscriptions = \_ -> Sub.none
         }
 

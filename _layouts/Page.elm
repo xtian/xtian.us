@@ -13,7 +13,7 @@ import Models.Page
 layout : String -> List (Element Never) -> List (Element Never)
 layout title contentItems =
     [ header
-    , E.column [] ([ E.el [] (E.text title) ] ++ contentItems)
+    , E.column [] (E.el [] (E.text title) :: contentItems)
     , footer
     ]
 
