@@ -19,23 +19,25 @@ type alias Layout =
     Program JD.Value JD.Value Never
 
 
-script : String -> Html Never
-script src =
-    H.node "citatsmle-script" [ HA.attribute "src" src ] []
+layout : JD.Decoder (Content content) -> (Content content -> List (Element Never)) -> Layout
+layout decoder view =
+    Browser.document
+        { init = \contentJson -> ( contentJson, Cmd.none )
+        , view =
+            \contentJson ->
+                case JD.decodeValue decoder contentJson of
+                    Err error ->
+                        { title = ""
+                        , body = [ htmlTemplate "Error" [ E.text (JD.errorToString error) ] ]
+                        }
 
-
-inlineScript : String -> Html Never
-inlineScript js =
-    H.node "citatsmle-script" [] [ H.text js ]
-
-
-stylesheet : String -> Html Never
-stylesheet href =
-    H.node "link"
-        [ HA.attribute "href" href
-        , HA.attribute "rel" "stylesheet"
-        ]
-        []
+                    Ok content ->
+                        { title = ""
+                        , body = [ htmlTemplate content.siteTitle (view content) ]
+                        }
+        , update = \msg contentJson -> ( contentJson, Cmd.none )
+        , subscriptions = \_ -> Sub.none
+        }
 
 
 htmlTemplate : String -> List (Element Never) -> Html Never
@@ -61,22 +63,20 @@ htmlTemplate title content =
         ]
 
 
-layout : JD.Decoder (Content content) -> (Content content -> List (Element Never)) -> Layout
-layout decoder view =
-    Browser.document
-        { init = \contentJson -> ( contentJson, Cmd.none )
-        , view =
-            \contentJson ->
-                case JD.decodeValue decoder contentJson of
-                    Err error ->
-                        { title = ""
-                        , body = [ htmlTemplate "Error" [ E.text (JD.errorToString error) ] ]
-                        }
+inlineScript : String -> Html Never
+inlineScript js =
+    H.node "citatsmle-script" [] [ H.text js ]
 
-                    Ok content ->
-                        { title = ""
-                        , body = [ htmlTemplate content.siteTitle (view content) ]
-                        }
-        , update = \msg contentJson -> ( contentJson, Cmd.none )
-        , subscriptions = \_ -> Sub.none
-        }
+
+script : String -> Html Never
+script src =
+    H.node "citatsmle-script" [ HA.attribute "src" src ] []
+
+
+stylesheet : String -> Html Never
+stylesheet href =
+    H.node "link"
+        [ HA.attribute "href" href
+        , HA.attribute "rel" "stylesheet"
+        ]
+        []
