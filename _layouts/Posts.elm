@@ -11,12 +11,8 @@ main : Elmstatic.Layout
 main =
     let
         postItem post =
-            --div []
-            --    [ a [ href ("/" ++ post.link) ] [ h2 [] [ text post.title ] ]
-            --    , Post.metadataHtml post
-            --    ]
             E.column []
-                [ E.text post.title
+                [ E.link [] { url = "/" ++ post.link, label = E.text post.title }
                 , Post.metadataHtml post
                 ]
     in
