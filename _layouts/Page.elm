@@ -44,6 +44,8 @@ markdownToHtml string =
     string
         |> Markdown.toHtmlWith mdOptions []
         |> E.html
+        |> List.singleton
+        |> E.paragraph []
 
 
 footer : Element Never
