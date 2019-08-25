@@ -1,0 +1,5 @@
+language: elm
+
+script:
+  - bin/setup
+  - bin/test
