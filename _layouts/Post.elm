@@ -1,6 +1,6 @@
 module Post exposing
     ( main
-    , metadataHtml
+    , partial
     )
 
 import Element as E exposing (Element)
@@ -12,10 +12,12 @@ import Page
 main : Elmstatic.Layout
 main =
     Elmstatic.layout Models.Post.decode <|
-        \content ->
-            Page.layout
-                content.title
-                [ metadataHtml content, Page.markdownToHtml content.markdown ]
+        \post -> Page.layout (Just post.title) (partial post)
+
+
+partial : Post -> List (Element Never)
+partial post =
+    [ metadataHtml post, Page.markdownToHtml post.markdown ]
 
 
 metadataHtml : Post -> Element Never

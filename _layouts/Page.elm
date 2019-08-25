@@ -11,11 +11,14 @@ import Markdown
 import Models.Page
 
 
-layout : String -> List (Element Never) -> List (Element Never)
+layout : Maybe String -> List (Element Never) -> List (Element Never)
 layout title contentItems =
     let
         heading =
-            E.el [ ER.heading 2 ] (E.text title)
+            title
+                |> Maybe.map E.text
+                |> Maybe.map (E.el [ ER.heading 2 ])
+                |> Maybe.withDefault E.none
     in
     [ header
     , E.column [ ER.mainContent ] (heading :: contentItems)
@@ -27,7 +30,7 @@ main : Elmstatic.Layout
 main =
     Elmstatic.layout Models.Page.decode <|
         \{ title, markdown } ->
-            layout title [ markdownToHtml markdown ]
+            layout (Just title) [ markdownToHtml markdown ]
 
 
 markdownToHtml : String -> Element Never
