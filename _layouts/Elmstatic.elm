@@ -61,8 +61,11 @@ htmlTemplate title content =
                 , HA.attribute "content" "width=device-width, initial-scale=1"
                 ]
                 []
+            , stylesheet "/highlight/gruvbox-light.css"
             ]
         , H.node "body" [] [ E.layout [] (E.column [] content) ]
+        , script "/highlight/highlight.pack.js"
+        , inlineScript "hljs.initHighlightingOnLoad();"
         ]
 
 
