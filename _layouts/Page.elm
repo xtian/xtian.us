@@ -36,7 +36,7 @@ markdownToHtml string =
         mdOptions : Markdown.Options
         mdOptions =
             { defaultHighlighting = Nothing
-            , githubFlavored = Just { tables = False, breaks = False }
+            , githubFlavored = Just { tables = True, breaks = False }
             , sanitize = False
             , smartypants = True
             }
