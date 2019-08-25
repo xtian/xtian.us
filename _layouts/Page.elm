@@ -50,9 +50,27 @@ markdownToHtml string =
 
 footer : Element Never
 footer =
-    E.none
+    E.textColumn [ ER.footer ]
+        [ E.paragraph []
+            [ E.text "Built with "
+            , E.link []
+                { url = "https://github.com/alexkorban/elmstatic"
+                , label = E.text "Elmstatic"
+                }
+            ]
+        , E.paragraph []
+            [ E.text "Post content licensed under "
+            , E.link []
+                { url = "http://creativecommons.org/licenses/by-sa/4.0"
+                , label = E.text "CC BY-SA 4.0"
+                }
+            ]
+        ]
 
 
 header : Element Never
 header =
-    E.none
+    E.link []
+        { url = "/"
+        , label = E.el [ ER.heading 1 ] (E.text "xtian.us")
+        }
