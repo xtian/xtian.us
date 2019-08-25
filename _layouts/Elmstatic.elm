@@ -61,6 +61,12 @@ htmlTemplate title content =
                 , HA.attribute "content" "width=device-width, initial-scale=1"
                 ]
                 []
+            , H.node "link"
+                [ HA.attribute "rel" "alternate"
+                , HA.attribute "type" "application/json"
+                , HA.attribute "href" "/feed.json"
+                ]
+                []
             , stylesheet "/highlight/gruvbox-light.css"
             ]
         , H.node "body" [] [ E.layout [] (E.column [] content) ]
