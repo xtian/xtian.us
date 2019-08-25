@@ -5,6 +5,7 @@ module Page exposing
     )
 
 import Element as E exposing (Element)
+import Element.Region as ER
 import Elmstatic
 import Markdown
 import Models.Page
@@ -12,8 +13,12 @@ import Models.Page
 
 layout : String -> List (Element Never) -> List (Element Never)
 layout title contentItems =
+    let
+        heading =
+            E.el [ ER.heading 2 ] (E.text title)
+    in
     [ header
-    , E.column [] (E.el [] (E.text title) :: contentItems)
+    , E.column [ ER.mainContent ] (heading :: contentItems)
     , footer
     ]
 
