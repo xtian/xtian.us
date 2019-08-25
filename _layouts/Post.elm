@@ -20,21 +20,21 @@ main =
 
 metadataHtml : Post -> Element Never
 metadataHtml { date, tags } =
-    E.column []
-        ([ E.text date
-         , E.text "•"
-         ]
-            ++ tagsToHtml tags
-        )
-
-
-tagsToHtml : List String -> List (Element Never)
-tagsToHtml tags =
     let
-        toLink tag =
+        tagToHtml tag =
             E.link []
                 { url = "/tags/" ++ String.toLower tag
                 , label = E.text tag
                 }
+
+        tagsHtml =
+            List.map tagToHtml tags
+
+        rest =
+            if List.isEmpty tagsHtml then
+                []
+
+            else
+                E.text " - " :: tagsHtml
     in
-    List.map toLink tags
+    E.row [] (E.text date :: rest)
